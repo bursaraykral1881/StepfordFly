@@ -1,125 +1,92 @@
 # DISCONTINUED ⚠️
-This project hasn't maintained over a month so its not finished, calibration is wrong. Use at your own risk! 
+This project hasn't been maintained over a month so its not finished, calibration is wrong. Use at your own risk!
 
-# Train Game Autopilot 🚂
+# StepfordFly 🚂
 
-This project provides a Python-based autopilot script for a train simulator game, leveraging Tesseract OCR and screen capture to read in-game information and automate train controls.
-
----
+StepfordFly is a Python-based autopilot for the train simulator game "Stepford County Railway", using screen capture and OCR to automate train controls.
 
 ## ⚠️ Warning
 
-This script is intended for **educational and experimental purposes only**. Using this script may violate the terms of service of certain games and could lead to penalties including, but not limited to, account suspension or bans. **Use at your own risk.** The developers of this script are not responsible for any consequences arising from its use.
+This script is for **educational purposes only**. Using it may violate the game's terms of service and could lead to penalties. **Use at your own risk.**
 
----
+## ✨ Features
 
-## 📂 Project File Structure
+*   **Automated Speed Control:** Maintains speed based on the current limit.
+*   **Signal Detection:** Detects red, green, yellow, and double-yellow signals and reacts accordingly.
+*   **Message Handling:** Responds to in-game messages like "Close Doors" and "Depart".
+*   **Automatic Braking:** Applies brakes when approaching a station or a red signal.
 
-Here's the file structure:
+## 🔧 How It Works
 
-    
-    StepfordFly
-    ├── config.py
-    ├── capture.py
-    ├── preprocess.py
-    ├── ocr_readers.py
-    ├── signal_detector.py
-    ├── game_controls.py
-    └── main.py
-    
+The script continuously performs a loop of the following actions:
 
----
+1.  **Capture:** Takes screenshots of specific areas of the game screen.
+2.  **Preprocess:** Converts the captured images to a format suitable for OCR and color detection.
+3.  **Detect & OCR:** Reads text (like speed and distance) using Tesseract OCR and detects signal colors.
+4.  **Control:** Sends keyboard commands to the game to control the train based on the gathered information.
 
-## 🚀 Usage
+## ⚙️ Installation
 
-The script operates by continuously capturing specific regions of your game screen, performing Optical Character Recognition (OCR) on text elements, detecting colors for signal lights, and then executing pre-defined actions (like braking or accelerating) based on the interpreted game state.
+### 1. Tesseract OCR
 
-To use the autopilot:
+You need to install the Tesseract OCR engine.
 
-1.  **Ensure Game is Running:** The train simulator game must be running and in focus on your primary display (or within a virtual display environment if on a server).
-
-2.  **Calibrate Regions:** Adjust the `REGIONS` dictionary in `train_autopilot.py` to match the exact pixel coordinates of the UI elements in your game. This is critical for accurate OCR and color detection.
-
-3.  **Calibrate Colors:** Fine-tune the `COLOR_RANGES` for your signal lights and the `DOUBLE_YELLOW_THRESHOLD` to accurately detect colors and distinguish between single and double yellow signals.
-
-4.  **Implement Control Actions:** Replace the placeholder `pass` statements in the `Game Control Functions` with actual `pyautogui` or `pynput` commands to simulate key presses or mouse clicks relevant to your game's controls.
-
-5.  **Run the Script:** Execute the `train_autopilot.py` script from your terminal:
-
-    ```python
-    python train_autopilot.py
-    ```
-
----
-
-## 🛠️ Installation
-
-### 1. Tesseract OCR Engine
-
-This project relies on the Tesseract OCR engine. You must install it on your system:
-
-* **Windows:** Download the installer from [Tesseract-OCR GitHub Wiki](https://github.com/UB-Mannheim/tesseract/wiki).
-
-* **Linux (Debian/Ubuntu):**
-```bash
-sudo apt install tesseract-ocr
-```
-
-* **macOS (Homebrew):**
-```bash
-brew install tesseract
-```
-
-   If `pytesseract` cannot find Tesseract, you may need to explicitly set `pytesseract.pytesseract.tesseract_cmd` in your script to the full path of the `tesseract.exe` (Windows) or `tesseract` (Linux/macOS) executable.
+*   **Windows:** Download from [Tesseract-OCR GitHub Wiki](https://github.com/UB-Mannheim/tesseract/wiki).
+*   **Linux (Debian/Ubuntu):** `sudo apt install tesseract-ocr`
+*   **macOS (Homebrew):** `brew install tesseract`
 
 ### 2. Python Dependencies
 
-Install the required Python libraries using pip:
+Install the required Python libraries:
 
 ```bash
 pip install pytesseract opencv-python numpy Pillow pyautogui
 ```
 
-### 3. Nix Shell (Recommended for Reproducibility)
+### 3. Nix Shell (Optional)
 
-For a reproducible development environment, you can use `nix-shell`. Ensure you have Nix installed, then place the provided `shell.nix` file in the project root and run:
+If you use Nix, you can run `nix-shell` in the project directory to get a shell with all the dependencies.
+
+## 🛠️ Configuration
+
+Before running the script, you need to configure it for your screen setup.
+
+### 1. Screen Regions
+
+The script needs to know where to look on the screen. Use the calibration tool to find the coordinates of the game's UI elements:
 
 ```bash
-nix-shell
+python calibrate.py
 ```
 
-This will set up Python with all the necessary libraries and the Tesseract engine.
+Move your mouse to the top-left and bottom-right corners of each UI element (like the speedometer) and note the coordinates. Then, update the `REGIONS` dictionary in `config.py` with these values.
 
----
+### 2. Tesseract Path (if needed)
 
-## 📝 TODO
+If `pytesseract` can't find Tesseract, set the `TESSERACT_CMD_PATH` in `config.py` to the location of your Tesseract executable.
 
-* **Add More Keywords:** Expand the `get_game_status_message()` and `get_dialog_message()` functions to include more relevant in-game status messages and dialogs.
+### 3. Color Ranges
 
-* **Refine Bindings:** Map all necessary in-game controls (e.g., horn, pantograph, specific brake levels) to `pyautogui` or `pynput` actions.
+The script detects signal lights based on HSV color ranges. If the default colors are not detected correctly, you may need to adjust the `COLOR_RANGES` in `config.py`.
 
-* **Advanced Control Logic:** Implement more sophisticated decision-making based on combinations of sensor inputs (e.g., dynamic braking based on distance and speed, advanced signal interpretation).
+## 🚀 Usage
 
-* **Error Handling and Robustness:** Enhance error handling for OCR failures and implement fallback mechanisms or retry logic.
+To run the autopilot, navigate to the project's parent directory and run it as a module:
 
-* **User Interface (Optional):** Consider adding a simple GUI for calibration and monitoring.
+```bash
+python3 -m StepfordFly.main
+```
 
-* **Configuration File:** Externalize `REGIONS`, `COLOR_RANGES`, and other parameters into a separate configuration file (e.g., JSON, YAML) for easier management.
+Make sure the game is running and is the active window.
 
----
+## 🔮 Future Improvements
+
+*   More sophisticated control logic (e.g., dynamic braking).
+*   A simple GUI for easier configuration.
+*   Support for more in-game events and messages.
 
 ## 📄 License
 
-This project is licensed under the [Apache License 2.0](LICENSE).
+This project is licensed under the [GNU Lesser General Public License v3.0](LICENSE).
 
-The Apache License 2.0 is a permissive free software license developed by the Apache Software Foundation. It allows users to use, modify, and distribute the software, even for commercial purposes, under its terms. Key features of this license include:
-
-* Permissiveness: It permits redistribution under the same or a different license, with or without modification.
-
-* Patent Grant: It includes an explicit patent grant from contributors to users, which helps protect users from patent infringement claims related to their use of the software.
-
-* Attribution: It requires that any distributed copies of the software must include the original copyright, patent, trademark, and attribution notices.
-
-* No Warranty: The license explicitly states that the software is provided "as is" without any warranty.
-
-This license is widely used for open-source projects due to its flexibility and the protection it offers to both contributors and users.
+The LGPL is a free software license that allows developers to use and integrate a software component into their own (even proprietary) software without being required to release the source code of their own components. However, if you modify the licensed component itself, you must release the source code of your modified version.
